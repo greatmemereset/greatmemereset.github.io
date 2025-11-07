@@ -1,0 +1,302 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Countdown to Jan 1, 2026</title>
+<style>
+  :root{
+    --bg1:#0f1724; --bg2:#081126;
+    --card:#0b1220cc; --accent:#7be2ff;
+    --glass: rgba(255,255,255,0.03);
+    --muted: rgba(255,255,255,0.6);
+    --glass-border: rgba(255,255,255,0.06);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  }
+  html,body{
+    height:100%;
+    margin:0;
+    background: radial-gradient(1200px 600px at 10% 10%, rgba(123,226,255,0.06), transparent),
+                radial-gradient(900px 500px at 90% 90%, rgba(255,111,174,0.03), transparent),
+                linear-gradient(160deg,var(--bg1), var(--bg2));
+    color: #fff;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+  }
+
+  .wrap{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 24px;
+    box-sizing:border-box;
+  }
+
+  .card{
+    width:100%;
+    max-width:980px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+    border-radius:20px;
+    padding:36px;
+    box-shadow: 0 10px 40px rgba(2,6,23,0.6);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(8px) saturate(120%);
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    align-items:center;
+  }
+
+  .title{
+    display:flex;
+    gap:16px;
+    align-items:baseline;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  .title h1{
+    margin:0;
+    font-size: clamp(20px, 3.4vw, 28px);
+    letter-spacing: -0.02em;
+    font-weight:600;
+  }
+  .subtitle{
+    color:var(--muted);
+    font-size: clamp(13px, 1.6vw, 15px);
+    margin-top:2px;
+  }
+
+  .countdown{
+    width:100%;
+    display:flex;
+    gap:14px;
+    justify-content:center;
+    flex-wrap:wrap;
+    margin-top:6px;
+  }
+
+  .segment{
+    background: linear-gradient(180deg, rgba(255,255,255,0.015), rgba(255,255,255,0.01));
+    border-radius:12px;
+    padding:16px 18px;
+    min-width:110px;
+    text-align:center;
+    border: 1px solid rgba(255,255,255,0.03);
+    box-shadow: 0 4px 18px rgba(2,6,23,0.45);
+    display:flex;
+    flex-direction:column;
+    gap:8px;
+    align-items:center;
+  }
+
+  .big{
+    font-weight:700;
+    font-size: clamp(24px, 4.8vw, 46px);
+    letter-spacing:-0.01em;
+    color: var(--accent);
+    text-shadow: 0 6px 22px rgba(123,226,255,0.06);
+    display:flex;
+    gap:6px;
+    align-items:baseline;
+    justify-content:center;
+  }
+
+  .label{
+    font-size:12px;
+    color:var(--muted);
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+  }
+
+  .tiny-note{
+    color:var(--muted);
+    font-size:13px;
+    text-align:center;
+    max-width:760px;
+    line-height:1.4;
+  }
+
+  .meta{
+    display:flex;
+    gap:12px;
+    color:var(--muted);
+    font-size:13px;
+    align-items:center;
+    margin-top:6px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+
+  .chip{
+    background:var(--glass);
+    padding:8px 12px;
+    border-radius:999px;
+    border: 1px solid rgba(255,255,255,0.02);
+    font-size:13px;
+  }
+
+  footer{
+    margin-top:6px;
+    color:rgba(255,255,255,0.45);
+    font-size:12px;
+    text-align:center;
+  }
+
+  /* Responsive tweaks */
+  @media (max-width:640px){
+    .segment{ min-width:90px; padding:12px; }
+    .big{ font-size: clamp(20px, 7vw, 34px); }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="card" role="region" aria-label="Countdown to January 1, 2026">
+      <div class="title">
+        <h1>Countdown — Jan 1, 2026</h1>
+        <div class="subtitle" id="tz-label"></div>
+      </div>
+
+      <div class="countdown" aria-live="polite" id="countdown">
+        <!-- segments inserted by JS -->
+      </div>
+
+      <p class="tiny-note" id="note">
+        The countdown target is midnight on <strong>January 1, 2026</strong> in your current location. Values show full months, then remaining weeks/days/hours/minutes/seconds.
+      </p>
+
+      <div class="meta">
+        <div class="chip" id="now-time"></div>
+        <div class="chip" id="target-time"></div>
+      </div>
+
+      <footer>Made with ✨ — updated live in your browser</footer>
+    </section>
+  </div>
+
+<script>
+(function(){
+  // Target: Jan 1, 2026 at 00:00:00 local time
+  const target = new Date(2026, 0, 1, 0, 0, 0, 0);
+
+  const segmentsOrder = ['months','weeks','days','hours','minutes','seconds'];
+  const labels = {
+    months: 'Months',
+    weeks: 'Weeks',
+    days: 'Days',
+    hours: 'Hours',
+    minutes: 'Minutes',
+    seconds: 'Seconds'
+  };
+
+  const countdownEl = document.getElementById('countdown');
+  const tzLabel = document.getElementById('tz-label');
+  const nowTimeChip = document.getElementById('now-time');
+  const targetTimeChip = document.getElementById('target-time');
+
+  // Build segments
+  segmentsOrder.forEach(k=>{
+    const seg = document.createElement('div');
+    seg.className = 'segment';
+    seg.id = 'seg-'+k;
+    seg.innerHTML = '<div class="big" id="val-'+k+'">0</div><div class="label">'+labels[k]+'</div>';
+    countdownEl.appendChild(seg);
+  });
+
+  // Accessibility: show user's current timezone / locale
+  const userLocale = navigator.language || 'en-US';
+  const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local Time';
+  tzLabel.textContent = tzName ? `Your timezone: ${tzName}` : '';
+
+  function pad(n){ return String(n).padStart(2,'0'); }
+
+  function formatLocal(dt){
+    try{
+      return new Intl.DateTimeFormat(userLocale, {
+        year:'numeric', month:'short', day:'numeric',
+        hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZoneName:'short'
+      }).format(dt);
+    }catch(e){
+      return dt.toString();
+    }
+  }
+
+  targetTimeChip.textContent = 'Target: ' + formatLocal(target);
+
+  // Core: compute countdown parts (months, weeks, days, hours, min, sec)
+  function computeParts(now, target){
+    if (now >= target) {
+      return {months:0, weeks:0, days:0, hours:0, minutes:0, seconds:0};
+    }
+
+    // 1) compute months as count of full months from "now" to "target"
+    // Start with a months difference by year/month then adjust if adding those months overshoots target.
+    let months = (target.getFullYear() - now.getFullYear())*12 + (target.getMonth() - now.getMonth());
+    // create a date by adding 'months' to now
+    let test = new Date(now.getTime());
+    test.setMonth(test.getMonth() + months);
+
+    // If this test is > target, reduce months by 1 and recompute test.
+    if (test > target){
+      months--;
+      test = new Date(now.getTime());
+      test.setMonth(test.getMonth() + months);
+    }
+
+    // Now remaining milliseconds after subtracting those months
+    let remainingMs = target - test;
+    // convert remainingMs to components
+    let totalSeconds = Math.floor(remainingMs/1000);
+    let seconds = totalSeconds % 60;
+    let totalMinutes = Math.floor(totalSeconds/60);
+    let minutes = totalMinutes % 60;
+    let totalHours = Math.floor(totalMinutes/60);
+    let hours = totalHours % 24;
+    let totalDays = Math.floor(totalHours/24);
+
+    // weeks and days from totalDays
+    let weeks = Math.floor(totalDays / 7);
+    let days = totalDays % 7;
+
+    return {months, weeks, days, hours, minutes, seconds};
+  }
+
+  function update(){
+    const now = new Date();
+    nowTimeChip.textContent = 'Now: ' + formatLocal(now);
+    const parts = computeParts(now, target);
+
+    // Display numbers (months not padded)
+    document.getElementById('val-months').textContent = parts.months;
+    document.getElementById('val-weeks').textContent  = parts.weeks;
+    document.getElementById('val-days').textContent   = parts.days;
+    document.getElementById('val-hours').textContent  = pad(parts.hours);
+    document.getElementById('val-minutes').textContent= pad(parts.minutes);
+    document.getElementById('val-seconds').textContent= pad(parts.seconds);
+
+    // If target reached, change small note
+    const note = document.getElementById('note');
+    if (new Date() >= target){
+      note.innerHTML = '<strong>Happy New Year — January 1, 2026 has arrived in your timezone!</strong>';
+    }
+  }
+
+  // initial run
+  update();
+  // update every 200ms to keep seconds smooth
+  const timer = setInterval(update, 200);
+
+  // Clean up if page hidden (optional, not necessary, but avoids excess)
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) {
+      clearInterval(timer);
+    } else {
+      // restart
+      update();
+      setInterval(update, 200);
+    }
+  });
+})();
+</script>
+</body>
+</html>
