@@ -4,138 +4,11 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Countdown to The Great Meme Reset 2026</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css" />
     <script src="https://counterapi.com/c.js?ns=great-meme-reset-2026" async></script>
-    <script src="/script.js"></script>
-    <script src="/server.js"></script>
-    <style src="/style.css"></style>
-    <json src="/package.json"></json>
-    <docker src="/docerfile"></docker>
-    <yml src="/docker-compose.yml"></yml>
-    <md src="/READ.md"></md>
-    <style>
-      * {
-        box-sizing: border-box;
-      }
-      body {
-        margin: 0;
-        font-family: 'Poppins', sans-serif;
-        background: url('background.jpg') no-repeat center center/cover;
-        height: 100vh;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        overflow: hidden;
-      }
-      .container {
-        background: rgba(0, 0, 0, 0.6);
-        border-radius: 20px;
-        padding: 40px 60px;
-        text-align: center;
-        box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-        backdrop-filter: blur(8px);
-        animation: fadeIn 1s ease;
-      }
-      h1 {
-        font-size: 2rem;
-        margin-bottom: 20px;
-        font-weight: 600;
-      }
-      .countdown {
-        font-size: 1.5rem;
-        display: flex;
-        justify-content: center;
-        gap: 15px;
-        flex-wrap: wrap;
-      }
-      .countdown div {
-        text-align: center;
-        background: rgba(255, 255, 255, 0.15);
-        padding: 15px 25px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-        min-width: 100px;
-      }
-      .label {
-        font-size: 0.9rem;
-        opacity: 0.8;
-      }
-      @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(20px); }
-        to { opacity: 1; transform: translateY(0); }
-      }
-      #contribute-btn {
-        margin-top: 30px;
-        padding: 15px 35px;
-        font-size: 1rem;
-        color: #fff;
-        background: rgba(255, 255, 255, 0.15);
-        border: none;
-        border-radius: 10px;
-        cursor: pointer;
-        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
-        transition: all 0.3s ease;
-        position: relative;
-        overflow: hidden;
-      }
-      #contribute-btn:hover {
-        background: rgba(255, 255, 255, 0.3);
-        transform: scale(1.05);
-      }
-      #contribute-btn:active::after {
-        content: '';
-        position: absolute;
-        width: 200%;
-        height: 200%;
-        background: rgba(255, 255, 255, 0.3);
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%) scale(0);
-        border-radius: 50%;
-        animation: ripple 0.5s linear;
-      }
-      @keyframes ripple {
-        to { transform: translate(-50%, -50%) scale(1); opacity: 0; }
-      }
-      #contribution-count {
-        margin-top: 15px;
-        font-size: 1.2rem;
-      }
-      .bottom-section {
-        margin-top: 50px;
-        text-align: center;
-        color: #fff;
-        font-size: 1rem;
-      }
-      .counterapi {
-        display: inline-block;
-        background: rgba(0,0,0,0.5);
-        border-radius: 10px;
-        padding: 10px 20px;
-        margin: 10px;
-        box-shadow: 0 0 10px rgba(255,255,255,0.2);
-      }
-      .like-button {
-        background: rgba(255,255,255,0.15);
-        border: none;
-        border-radius: 10px;
-        padding: 10px 20px;
-        color: white;
-        font-size: 1rem;
-        cursor: pointer;
-        box-shadow: 0 0 15px rgba(255,255,255,0.2);
-        transition: all 0.3s ease;
-      }
-      .like-button:hover {
-        background: rgba(255,255,255,0.3);
-        transform: scale(1.05);
-      }
-    </style>
   </head>
   <body>
+    <!-- Main Countdown Container -->
     <div class="container">
       <h1>Countdown to The Great Meme Reset 2026</h1>
       <div class="countdown" id="countdown"></div>
@@ -143,61 +16,17 @@
       <div id="contribution-count"></div>
     </div>
 
-    <div class="bottom-section">
+    <!-- Community Stats Section -->
+    <div class="community-stats">
       <h2>Community Stats</h2>
-      <div class="counterapi" key="viewers" behavior="view" label="Viewers" icon="eye" startNumber="0"></div>
+      <div id="viewerCount" class="counter-display">Viewers online: 0</div>
       <div>
         <button id="likeButton" class="like-button">👍 Like</button>
         <span id="likeCount">0</span>
       </div>
     </div>
 
-    <script>
-      // Countdown Logic
-      function updateCountdown() {
-        const now = new Date();
-        const target = new Date('January 1, 2026 00:00:00');
-        const diff = target - now;
-
-        const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
-        const weeks = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24 * 7));
-        const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
-        const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-
-        document.getElementById('countdown').innerHTML = `
-          <div><strong>${months}</strong><div class='label'>Months</div></div>
-          <div><strong>${weeks}</strong><div class='label'>Weeks</div></div>
-          <div><strong>${days}</strong><div class='label'>Days</div></div>
-          <div><strong>${hours}</strong><div class='label'>Hours</div></div>
-          <div><strong>${minutes}</strong><div class='label'>Minutes</div></div>
-          <div><strong>${seconds}</strong><div class='label'>Seconds</div></div>`;
-      }
-      setInterval(updateCountdown, 1000);
-      updateCountdown();
-
-      // Contribution Counter (local persistent)
-      let count = localStorage.getItem('contributions') || 0;
-      const contributionDisplay = document.getElementById('contribution-count');
-      contributionDisplay.textContent = `${count} people contributing`;
-      document.getElementById('contribute-btn').addEventListener('click', () => {
-        count++;
-        localStorage.setItem('contributions', count);
-        contributionDisplay.textContent = `${count} people contributing`;
-      });
-
-      // Like Button Logic with CounterAPI
-      async function updateLikeCount() {
-        const resp = await fetch('https://counterapi.com/api/great-meme-reset-2026/vote/likes');
-        const obj = await resp.json();
-        document.getElementById('likeCount').textContent = obj.value;
-      }
-      document.getElementById('likeButton').addEventListener('click', async () => {
-        await fetch('https://counterapi.com/api/great-meme-reset-2026/vote/likes', { method: 'POST' });
-        updateLikeCount();
-      });
-      updateLikeCount();
-    </script>
+    <!-- External JS -->
+    <script src="script.js"></script>
   </body>
 </html>
