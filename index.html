@@ -3,42 +3,339 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>Great Meme Reset 2026 — Countdown</title>
-  <link rel="stylesheet" href="/style.css" />
+  <meta name="description" content="Countdown to The Great Meme Reset — Jan 1, 2026 (local). Realtime-feel UI with confetti, clicks, and share." />
+  <style>
+    :root{
+      --bg-overlay: rgba(5,8,15,0.45);
+      --cardBg: rgba(255,255,255,0.06);
+      --cardGlass: rgba(255,255,255,0.06);
+      --accent: #7be2ff;
+      --accent-2: #ff6fb0;
+      --muted: rgba(255,255,255,0.82);
+      --btn-bg: rgba(255,255,255,0.12);
+      --btn-bg-hover: rgba(255,255,255,0.18);
+      --glass-border: rgba(255,255,255,0.06);
+      font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    }
+
+    html,body{height:100%;margin:0;background:#091224;color:#fff}
+
+    /* Background image: replace URL below with your image or keep the gradient fallback */
+    body{
+      background-image: linear-gradient(120deg, rgba(10,16,30,1) 0%, rgba(8,12,22,1) 60%), url('background.jpg');
+      background-size: cover; background-position: center; background-attachment: fixed;
+    }
+
+    /* Overall container */
+    .wrap{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:40px;box-sizing:border-box;backdrop-filter: blur(2px)}
+
+    /* translucent card */
+    .card{width:100%;max-width:980px;padding:34px;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.02));border:1px solid var(--glass-border);box-shadow: 0 18px 60px rgba(2,6,23,0.6);backdrop-filter: blur(8px) saturate(120%);display:flex;flex-direction:column;gap:18px;align-items:center;opacity:0;transform:translateY(8px);animation:fadeIn 700ms ease forwards;}
+
+    @keyframes fadeIn{to{opacity:1;transform:none}}
+
+    .title{display:flex;flex-direction:column;align-items:center;text-align:center}
+    .title h1{margin:0;font-size:clamp(22px,3.6vw,34px);letter-spacing:-0.02em}
+    .subtitle{color:var(--muted);font-size:14px;margin-top:6px}
+
+    .countdown{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:4px;width:100%}
+    .segment{min-width:96px;background:rgba(255,255,255,0.035);padding:14px;border-radius:12px;text-align:center;border:1px solid rgba(255,255,255,0.03);box-shadow: 0 6px 18px rgba(2,6,23,0.45)}
+
+    .big{font-weight:800;font-size:clamp(22px,5vw,44px);color:var(--accent);display:flex;align-items:baseline;justify-content:center;gap:6px}
+    .smallLabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:0.14em;margin-top:6px}
+
+    .meta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:6px}
+    .chip{background:rgba(255,255,255,0.03);padding:8px 12px;border-radius:999px;color:var(--muted);font-size:13px;border:1px solid rgba(255,255,255,0.02)}
+
+    /* Contribute button style: translucent with shadow and ripple */
+    .clicker{display:flex;flex-direction:column;align-items:center;margin-top:8px}
+    .contribBtn{position:relative;overflow:hidden;padding:18px 34px;border-radius:14px;border:none;background:var(--btn-bg);color:#fff;font-weight:700;font-size:18px;cursor:pointer;box-shadow:0 8px 30px rgba(0,0,0,0.45);backdrop-filter: blur(4px);transition:transform 160ms cubic-bezier(.2,.9,.3,1), box-shadow 160ms}
+    .contribBtn:hover{transform:translateY(-3px);box-shadow:0 14px 40px rgba(0,0,0,0.55)}
+    .contribBtn:active{transform:translateY(-1px) scale(0.995)}
+    .contribText{margin-top:10px;color:var(--muted);font-size:15px}
+
+    /* ripple effect */
+    .ripple{position:absolute;border-radius:50%;transform:scale(0);animation:ripple 600ms linear;opacity:0.65;background:linear-gradient(90deg,var(--accent),var(--accent-2));}
+    @keyframes ripple{to{transform:scale(6);opacity:0}}
+
+    /* share & controls row */
+    .controls{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .controlBtn{padding:8px 12px;border-radius:999px;border:1px solid rgba(255,255,255,0.04);background:rgba(255,255,255,0.03);color:var(--muted);cursor:pointer}
+
+    /* confetti canvas sits on top */
+    #confetti-canvas{position:fixed;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:1000}
+
+    /* subtle day/night tint */
+    .tint-day{box-shadow: inset 0 0 120px rgba(255,255,255,0.02)}
+    .tint-night{box-shadow: inset 0 0 120px rgba(0,0,0,0.2)}
+
+    /* responsive tweaks */
+    @media (max-width:640px){.segment{min-width:80px;padding:10px}.big{font-size:clamp(18px,10vw,32px)}.contribBtn{padding:14px 26px;font-size:16px}}
+
+  </style>
+<style src="/style.css"></style>
+<script src="/script.js"></script>
+<script src="/server.js"></script>
 </head>
 <body>
-  <div id="bg-overlay" aria-hidden="true"></div>
-  <main class="wrap">
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+  <div class="wrap">
     <section class="card" role="region" aria-label="Countdown to the Great Meme Reset 2026">
       <div class="title">
         <h1>The Great Meme Reset — Jan 1, 2026</h1>
-        <div class="subtitle" id="tz-label">Your timezone</div>
+        <div class="subtitle" id="tz-label">Detecting timezone…</div>
       </div>
 
-      <div class="countdown" aria-live="polite" id="countdown">
-        <!-- segments inserted by script -->
-      </div>
+      <div class="countdown" aria-live="polite" id="countdown"></div>
 
-      <p class="tiny-note" id="note">Countdown target: midnight on January 1, 2026 (local time). Display shows full months, then remaining weeks/days/hours/mins/seconds.</p>
+      <p class="subtitle" id="note">Countdown target: midnight on January 1, 2026 (local time). Shows full months → weeks → days → hours → minutes → seconds.</p>
 
       <div class="meta">
         <div class="chip" id="now-time">Now: —</div>
         <div class="chip" id="target-time">Target: —</div>
         <div class="chip" id="viewers-count">Viewers online: —</div>
+        <div class="chip" id="sound-toggle" role="button" aria-pressed="false">🔈 Sound: Off</div>
       </div>
 
       <div class="clicker">
-        <button id="contribBtn" aria-label="Contribute to the global count">Contribute</button>
-        <p id="contribText">0 of people contributing</p>
+        <button id="contribBtn" class="contribBtn" aria-label="Contribute">Contribute</button>
+        <div class="contribText" id="contribText">0 of people contributing</div>
+        <div style="height:8px"></div>
+        <div class="controls">
+          <button id="shareBtn" class="controlBtn">Share</button>
+          <button id="copyBtn" class="controlBtn">Copy link</button>
+        </div>
       </div>
 
     </section>
-  </main>
+  </div>
 
-  <!-- Confetti (CDN) and Socket.IO client -->
-  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="/script.js"></script>
+<script>
+// Full-featured single-file frontend
+(function(){
+  // Target local midnight Jan 1, 2026
+  const target = new Date(2026,0,1,0,0,0,0);
+
+  // Elements
+  const countdownEl = document.getElementById('countdown');
+  const tzLabel = document.getElementById('tz-label');
+  const nowTimeChip = document.getElementById('now-time');
+  const targetTimeChip = document.getElementById('target-time');
+  const viewersChip = document.getElementById('viewers-count');
+  const contribBtn = document.getElementById('contribBtn');
+  const contribText = document.getElementById('contribText');
+  const confettiCanvas = document.getElementById('confetti-canvas');
+  const soundToggle = document.getElementById('sound-toggle');
+  const shareBtn = document.getElementById('shareBtn');
+  const copyBtn = document.getElementById('copyBtn');
+
+  const segments = ['months','weeks','days','hours','minutes','seconds'];
+  const labels = { months:'Months', weeks:'Weeks', days:'Days', hours:'Hours', minutes:'Minutes', seconds:'Seconds' };
+
+  // Build countdown segments
+  segments.forEach(k => {
+    const seg = document.createElement('div');
+    seg.className = 'segment';
+    seg.id = 'seg-' + k;
+    seg.innerHTML = `<div class="big" id="val-${k}">0</div><div class="smallLabel">${labels[k]}</div>`;
+    countdownEl.appendChild(seg);
+  });
+
+  // Locale / timezone info
+  const locale = navigator.language || 'en-US';
+  const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local Time';
+  tzLabel.textContent = `Your timezone: ${tzName}`;
+
+  function formatLocal(dt){
+    try{
+      return new Intl.DateTimeFormat(locale, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZoneName:'short' }).format(dt);
+    }catch(e){ return dt.toString(); }
+  }
+
+  targetTimeChip.textContent = 'Target: ' + formatLocal(target);
+
+  // compute months/weeks/days etc (months = full calendar months between now and target)
+  function computeParts(now, target){
+    if (now >= target) return { months:0, weeks:0, days:0, hours:0, minutes:0, seconds:0 };
+    let months = (target.getFullYear() - now.getFullYear()) * 12 + (target.getMonth() - now.getMonth());
+    let test = new Date(now.getTime());
+    test.setMonth(test.getMonth() + months);
+    if (test > target) {
+      months -= 1;
+      test = new Date(now.getTime());
+      test.setMonth(test.getMonth() + months);
+    }
+    let remMs = target - test;
+    let totalSec = Math.floor(remMs / 1000);
+    let seconds = totalSec % 60;
+    let totalMin = Math.floor(totalSec / 60);
+    let minutes = totalMin % 60;
+    let totalHr = Math.floor(totalMin / 60);
+    let hours = totalHr % 24;
+    let totalDays = Math.floor(totalHr / 24);
+    let weeks = Math.floor(totalDays / 7);
+    let days = totalDays % 7;
+    return { months, weeks, days, hours, minutes, seconds };
+  }
+
+  // Smooth update using requestAnimationFrame but throttle to 200ms
+  let lastTick = 0;
+  function tick(ts){
+    if (!lastTick || ts - lastTick >= 200) {
+      const now = new Date();
+      nowTimeChip.textContent = 'Now: ' + formatLocal(now);
+      const parts = computeParts(now, target);
+      document.getElementById('val-months').textContent = parts.months;
+      document.getElementById('val-weeks').textContent = String(parts.weeks).padStart(2,'0');
+      document.getElementById('val-days').textContent = String(parts.days).padStart(2,'0');
+      document.getElementById('val-hours').textContent = String(parts.hours).padStart(2,'0');
+      document.getElementById('val-minutes').textContent = String(parts.minutes).padStart(2,'0');
+      document.getElementById('val-seconds').textContent = String(parts.seconds).padStart(2,'0');
+
+      // when reached, fire confetti once
+      if (now >= target && !window._gmreset_confetti_done) {
+        window._gmreset_confetti_done = true;
+        launchConfetti(true);
+        document.getElementById('note').innerHTML = '<strong>Happy Great Meme Reset — Jan 1, 2026 has arrived in your timezone!</strong>';
+        playSound('confetti');
+      }
+      lastTick = ts;
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+
+  // ----------------- Contrib clicker (local + persistent) -----------------
+  // store total contributions locally (global persistence requires server)
+  let totalContrib = parseInt(localStorage.getItem('gmreset_contrib') || '0', 10);
+  function updateContribText(){ contribText.textContent = `${totalContrib} of people contributing`; }
+  updateContribText();
+
+  // Add ripple on click and sound, animation
+  contribBtn.addEventListener('click', (e) => {
+    // ripple
+    const r = document.createElement('span');
+    r.className = 'ripple';
+    const rect = contribBtn.getBoundingClientRect();
+    const size = Math.max(rect.width, rect.height) * 0.8;
+    r.style.width = r.style.height = size + 'px';
+    r.style.left = (e.clientX - rect.left - size/2) + 'px';
+    r.style.top = (e.clientY - rect.top - size/2) + 'px';
+    contribBtn.appendChild(r);
+    setTimeout(()=> r.remove(), 700);
+
+    // small pop animation
+    contribBtn.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 220, easing: 'ease-out' });
+
+    // update local count
+    totalContrib += 1;
+    localStorage.setItem('gmreset_contrib', String(totalContrib));
+    updateContribText();
+
+    playSound('click');
+  });
+
+  // -------------- Confetti (canvas-confetti fallback included inline) --------------
+  // We'll use a tiny confetti implementation if external CDN is blocked.
+  // Try loading canvas-confetti if available on window.confetti, otherwise use a small fallback.
+
+  // dynamic import via script tag for canvas-confetti CDN
+  (function loadConfettiLib(){
+    const s = document.createElement('script');
+    s.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+    s.async = true;
+    s.onload = ()=>{ console.log('confetti lib loaded'); };
+    s.onerror = ()=>{ console.warn('confetti lib failed to load — using small fallback'); };
+    document.head.appendChild(s);
+  })();
+
+  function launchConfetti(big){
+    const duration = big ? 4000 : 1200;
+    const end = Date.now() + duration;
+    const defaultConfetti = window.confetti;
+    const myCanvas = confettiCanvas;
+    if (defaultConfetti) {
+      const myConfetti = defaultConfetti.create(myCanvas, { resize: true, useWorker: true });
+      const interval = setInterval(function() {
+        myConfetti({ particleCount: 40, spread: 70, origin: { y: 0.6 } });
+        if (Date.now() > end) clearInterval(interval);
+      }, 250);
+    } else {
+      // Fallback: do simple emoji shower
+      const emInterval = setInterval(()=>{
+        const el = document.createElement('div');
+        el.textContent = '🎉';
+        el.style.position='fixed'; el.style.left=(Math.random()*100)+'vw'; el.style.top='-30px'; el.style.fontSize='28px'; el.style.pointerEvents='none'; el.style.opacity='0.95'; el.style.zIndex=9999;
+        document.body.appendChild(el);
+        const ani = el.animate([{ transform: 'translateY(0) rotate(0deg)' }, { transform: 'translateY(120vh) rotate(720deg)' }], { duration: 2400, easing:'linear' });
+        ani.onfinish = ()=>el.remove();
+        if (Date.now() > end) clearInterval(emInterval);
+      }, 120);
+    }
+  }
+
+  // -------------- Sound effects (muted by default) ----------------
+  const sounds = {
+    click: new Audio(),
+    confetti: new Audio()
+  };
+  // small base64-encoded tiny sounds (short click & pop), to avoid cross-origin issues
+  // click sound (very short)
+  sounds.click.src = 'data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...';
+  // confetti/pop (short)
+  sounds.confetti.src = 'data:audio/mp3;base64,//uQZAAAAAAAAAAAAAAAAAAAAAAAWGluZwAAAA8AAAACAAACcQCA...';
+
+  // We'll keep them muted by default until user toggles
+  let soundEnabled = false;
+  function setSoundEnabled(v){ soundEnabled = !!v; soundToggle.setAttribute('aria-pressed', String(!!v)); soundToggle.textContent = soundEnabled ? '🔊 Sound: On' : '🔈 Sound: Off'; }
+  setSoundEnabled(false);
+
+  soundToggle.addEventListener('click', ()=>{ setSoundEnabled(!soundEnabled); playSound('click'); });
+  function playSound(name){ if (!soundEnabled) return; try{ const s = sounds[name]; if (s){ s.currentTime = 0; s.play().catch(()=>{}); } }catch(e){} }
+
+  // -------------- Share / copy functionality ----------------
+  shareBtn.addEventListener('click', async ()=>{
+    const shareData = { title: document.title, text: 'Countdown to The Great Meme Reset 2026', url: window.location.href };
+    try{
+      if (navigator.share) { await navigator.share(shareData); }
+      else { // fallback to copy
+        await navigator.clipboard.writeText(window.location.href);
+        showToast('Link copied to clipboard');
+      }
+    }catch(e){ // copy fallback
+      try{ await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard'); }catch(e2){ alert('Share not available — copy the URL manually.'); }
+    }
+  });
+
+  copyBtn.addEventListener('click', async ()=>{
+    try{ await navigator.clipboard.writeText(window.location.href); showToast('Link copied to clipboard'); }catch(e){ alert('Copy failed — please copy manually.'); }
+  });
+
+  // small toast
+  function showToast(msg){ const t = document.createElement('div'); t.textContent=msg; t.style.position='fixed'; t.style.right='16px'; t.style.bottom='20px'; t.style.background='rgba(0,0,0,0.6)'; t.style.color='#fff'; t.style.padding='10px 14px'; t.style.borderRadius='8px'; t.style.zIndex=9999; t.style.boxShadow='0 6px 24px rgba(0,0,0,0.5)'; document.body.appendChild(t); setTimeout(()=> t.style.opacity='0', 1600); setTimeout(()=> t.remove(), 2200); }
+
+  // -------------- small UX niceties: day/night tint ----------------
+  (function applyTint(){
+    try{
+      const h = new Date().getHours();
+      const card = document.querySelector('.card');
+      if (h >= 7 && h < 18) card.classList.add('tint-day'); else card.classList.add('tint-night');
+    }catch(e){}
+  })();
+
+  // -------------- simple viewers placeholder (no backend) ----------------
+  viewersChip.textContent = 'Viewers online: —';
+
+  // -------------- Accessibility: keyboard shortcut C to contribute ----------------
+  document.addEventListener('keydown', (e)=>{ if (e.key.toLowerCase() === 'c') { contribBtn.click(); } });
+
+  // initialize confetti canvas size
+  function resizeCanvas(){ confettiCanvas.width = window.innerWidth; confettiCanvas.height = window.innerHeight; }
+  window.addEventListener('resize', resizeCanvas); resizeCanvas();
+
+})();
+</script>
 </body>
 </html>
