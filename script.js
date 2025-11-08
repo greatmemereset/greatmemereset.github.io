@@ -4,12 +4,12 @@ function updateCountdown() {
   const target = new Date('January 1, 2026 00:00:00');
   const diff = target - now;
 
-  const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
-  const weeks = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24 * 7));
-  const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
-  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+  const months = Math.floor(diff / (1000*60*60*24*30));
+  const weeks = Math.floor((diff % (1000*60*60*24*30)) / (1000*60*60*24*7));
+  const days = Math.floor((diff % (1000*60*60*24*7)) / (1000*60*60*24));
+  const hours = Math.floor((diff % (1000*60*60*24)) / (1000*60*60));
+  const minutes = Math.floor((diff % (1000*60*60)) / (1000*60));
+  const seconds = Math.floor((diff % (1000*60)) / 1000);
 
   document.getElementById('countdown').innerHTML = `
     <div><strong>${months}</strong><div class='label'>Months</div></div>
@@ -22,7 +22,7 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// Persistent Contribution Counter
+// Persistent Contribute Button
 let count = localStorage.getItem('contributions') || 0;
 const contributionDisplay = document.getElementById('contribution-count');
 contributionDisplay.textContent = `${count} people contributing`;
@@ -33,34 +33,35 @@ document.getElementById('contribute-btn').addEventListener('click', () => {
   contributionDisplay.textContent = `${count} people contributing`;
 });
 
-// Viewer Count using CounterAPI (non-clickable display)
+// CountAPI Viewer Count (global)
 async function updateViewerCount() {
   try {
-    const resp = await fetch('https://counterapi.com/api/great-meme-reset-2026/viewers', { method: 'GET' });
-    const obj = await resp.json();
-    document.getElementById('viewerCount').textContent = `Viewers online: ${obj.value}`;
+    const res = await fetch('https://api.countapi.xyz/hit/great-meme-reset-2026/viewers');
+    const data = await res.json();
+    document.getElementById('viewerCount').textContent = `Total viewers: ${data.value}`;
   } catch (err) {
-    console.error('Error fetching viewer count:', err);
+    console.error('Viewer count error:', err);
   }
 }
 
-// Like Button Logic using CounterAPI
+// CountAPI Like Button
 async function updateLikeCount() {
   try {
-    const resp = await fetch('https://counterapi.com/api/great-meme-reset-2026/vote/likes');
-    const obj = await resp.json();
-    document.getElementById('likeCount').textContent = obj.value;
+    const res = await fetch('https://api.countapi.xyz/get/great-meme-reset-2026/likes');
+    const data = await res.json();
+    document.getElementById('likeCount').textContent = data.value;
   } catch (err) {
-    console.error('Error fetching like count:', err);
+    console.error('Like count error:', err);
   }
 }
 
 document.getElementById('likeButton').addEventListener('click', async () => {
   try {
-    await fetch('https://counterapi.com/api/great-meme-reset-2026/vote/likes', { method: 'POST' });
-    updateLikeCount();
+    const res = await fetch('https://api.countapi.xyz/hit/great-meme-reset-2026/likes');
+    const data = await res.json();
+    document.getElementById('likeCount').textContent = data.value;
   } catch (err) {
-    console.error('Error incrementing like count:', err);
+    console.error('Error liking:', err);
   }
 });
 
