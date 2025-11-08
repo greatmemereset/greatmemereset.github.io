@@ -1,101 +1,70 @@
-// public/script.js
-(function(){
-  const target = new Date(2026,0,1,0,0,0,0);
-  const segmentsOrder = ['months','weeks','days','hours','minutes','seconds'];
-  const labels = { months:'Months', weeks:'Weeks', days:'Days', hours:'Hours', minutes:'Minutes', seconds:'Seconds' };
+// Countdown Logic
+function updateCountdown() {
+  const now = new Date();
+  const target = new Date('January 1, 2026 00:00:00');
+  const diff = target - now;
 
-  const countdownEl = document.getElementById('countdown');
-  const tzLabel = document.getElementById('tz-label');
-  const nowTimeChip = document.getElementById('now-time');
-  const targetTimeChip = document.getElementById('target-time');
-  const viewersCountEl = document.getElementById('viewers-count');
-  const contribBtn = document.getElementById('contribBtn');
-  const contribText = document.getElementById('contribText');
+  const months = Math.floor(diff / (1000 * 60 * 60 * 24 * 30));
+  const weeks = Math.floor((diff % (1000 * 60 * 60 * 24 * 30)) / (1000 * 60 * 60 * 24 * 7));
+  const days = Math.floor((diff % (1000 * 60 * 60 * 24 * 7)) / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+  const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+  const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-  // Build segments
-  segmentsOrder.forEach(k=>{
-    const seg = document.createElement('div');
-    seg.className='segment';
-    seg.id='seg-'+k;
-    seg.innerHTML = `<div class="big" id="val-${k}">0</div><div class="label">${labels[k]}</div>`;
-    countdownEl.appendChild(seg);
-  });
+  document.getElementById('countdown').innerHTML = `
+    <div><strong>${months}</strong><div class='label'>Months</div></div>
+    <div><strong>${weeks}</strong><div class='label'>Weeks</div></div>
+    <div><strong>${days}</strong><div class='label'>Days</div></div>
+    <div><strong>${hours}</strong><div class='label'>Hours</div></div>
+    <div><strong>${minutes}</strong><div class='label'>Minutes</div></div>
+    <div><strong>${seconds}</strong><div class='label'>Seconds</div></div>`;
+}
+setInterval(updateCountdown, 1000);
+updateCountdown();
 
-  const userLocale = navigator.language || 'en-US';
-  const tzName = Intl.DateTimeFormat().resolvedOptions().timeZone || 'Local Time';
-  tzLabel.textContent = tzName ? `Your timezone: ${tzName}` : '';
+// Persistent Contribution Counter
+let count = localStorage.getItem('contributions') || 0;
+const contributionDisplay = document.getElementById('contribution-count');
+contributionDisplay.textContent = `${count} people contributing`;
 
-  function pad(n){ return String(n).padStart(2,'0'); }
-  function formatLocal(dt){
-    try{
-      return new Intl.DateTimeFormat(userLocale, { year:'numeric', month:'short', day:'numeric', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false, timeZoneName:'short' }).format(dt);
-    }catch(e){ return dt.toString(); }
+document.getElementById('contribute-btn').addEventListener('click', () => {
+  count++;
+  localStorage.setItem('contributions', count);
+  contributionDisplay.textContent = `${count} people contributing`;
+});
+
+// Viewer Count using CounterAPI (non-clickable display)
+async function updateViewerCount() {
+  try {
+    const resp = await fetch('https://counterapi.com/api/great-meme-reset-2026/viewers', { method: 'GET' });
+    const obj = await resp.json();
+    document.getElementById('viewerCount').textContent = `Viewers online: ${obj.value}`;
+  } catch (err) {
+    console.error('Error fetching viewer count:', err);
   }
+}
 
-  targetTimeChip.textContent = 'Target: ' + formatLocal(target);
-
-  function computeParts(now, target){
-    if (now >= target) return {months:0,weeks:0,days:0,hours:0,minutes:0,seconds:0};
-    let months = (target.getFullYear()-now.getFullYear())*12 + (target.getMonth()-now.getMonth());
-    let test = new Date(now.getTime());
-    test.setMonth(test.getMonth()+months);
-    if (test > target){ months--; test = new Date(now.getTime()); test.setMonth(test.getMonth()+months); }
-    let remainingMs = target - test;
-    let totalSeconds = Math.floor(remainingMs/1000);
-    let seconds = totalSeconds % 60;
-    let totalMinutes = Math.floor(totalSeconds/60);
-    let minutes = totalMinutes % 60;
-    let totalHours = Math.floor(totalMinutes/60);
-    let hours = totalHours % 24;
-    let totalDays = Math.floor(totalHours/24);
-    let weeks = Math.floor(totalDays/7);
-    let days = totalDays % 7;
-    return {months, weeks, days, hours, minutes, seconds};
+// Like Button Logic using CounterAPI
+async function updateLikeCount() {
+  try {
+    const resp = await fetch('https://counterapi.com/api/great-meme-reset-2026/vote/likes');
+    const obj = await resp.json();
+    document.getElementById('likeCount').textContent = obj.value;
+  } catch (err) {
+    console.error('Error fetching like count:', err);
   }
+}
 
-  function update(){
-    const now = new Date();
-    nowTimeChip.textContent = 'Now: ' + formatLocal(now);
-    const parts = computeParts(now, target);
-    document.getElementById('val-months').textContent = parts.months;
-    document.getElementById('val-weeks').textContent = pad(parts.weeks);
-    document.getElementById('val-days').textContent = pad(parts.days);
-    document.getElementById('val-hours').textContent = pad(parts.hours);
-    document.getElementById('val-minutes').textContent = pad(parts.minutes);
-    document.getElementById('val-seconds').textContent = pad(parts.seconds);
-
-    const note = document.getElementById('note');
-    if (new Date() >= target){
-      note.innerHTML = '<strong>Happy Great Meme Reset — Jan 1, 2026 has arrived in your timezone!</strong>';
-      try{ confetti({ particleCount: 200, spread: 80 }); }catch(e){}
-    }
+document.getElementById('likeButton').addEventListener('click', async () => {
+  try {
+    await fetch('https://counterapi.com/api/great-meme-reset-2026/vote/likes', { method: 'POST' });
+    updateLikeCount();
+  } catch (err) {
+    console.error('Error incrementing like count:', err);
   }
+});
 
-  update();
-  setInterval(update, 250);
-
-  // Socket.IO realtime
-  const socket = io();
-
-  socket.on('connect', ()=>{ /* connected */ });
-
-  socket.on('viewersUpdate', d => {
-    viewersCountEl.textContent = `Viewers online: ${d.count}`;
-  });
-
-  socket.on('contribUpdate', d => {
-    const cnt = Number(d.count) || 0;
-    contribText.textContent = `${cnt} of people contributing`;
-  });
-
-  contribBtn.addEventListener('click', ()=>{
-    // optimistic UI handled by server push
-    socket.emit('incrementContrib', { increment: 1 });
-    // also POST as HTTP fallback
-    fetch('/api/contrib', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ increment: 1 }) }).catch(()=>{});
-  });
-
-  // Also get initial global value from HTTP endpoint in case socket message was missed
-  fetch('/api/contrib').then(r=>r.json()).then(d=>{ if (d && typeof d.count === 'number') contribText.textContent = `${d.count} of people contributing`; }).catch(()=>{});
-
-})();
+// Initial fetch
+updateViewerCount();
+updateLikeCount();
+setInterval(updateViewerCount, 10000); // refresh viewers every 10 seconds
