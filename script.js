@@ -1,4 +1,4 @@
-// Countdown
+// COUNTDOWN
 function updateCountdown() {
   const now = new Date();
   const target = new Date('January 1, 2026 00:00:00');
@@ -22,7 +22,7 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// Local contribution count
+// CONTRIBUTION BUTTON
 let count = localStorage.getItem('contributions') || 0;
 const contributionDisplay = document.getElementById('contribution-count');
 contributionDisplay.textContent = `${count} people contributing`;
@@ -31,28 +31,54 @@ document.getElementById('contribute-btn').addEventListener('click', () => {
   count++;
   localStorage.setItem('contributions', count);
   contributionDisplay.textContent = `${count} people contributing`;
+  document.getElementById('contribute-btn').classList.add('glow');
+  setTimeout(() => document.getElementById('contribute-btn').classList.remove('glow'), 1000);
 });
 
-// CountAPI: Viewer & Likes
-async function updateViewerCount() {
-  const res = await fetch('https://api.countapi.xyz/hit/meme-reset-2026/viewers');
+// COUNTAPI (Total visits + Likes)
+async function updateTotalVisits() {
+  const res = await fetch('https://api.countapi.xyz/hit/great-meme-reset-2026/totalvisits');
   const data = await res.json();
-  document.getElementById('viewerCount').textContent = `👁️ Total Viewers: ${data.value}`;
+  document.getElementById('totalVisits').textContent = `🌍 Total Visits: ${data.value}`;
 }
 
+// Like button
 async function updateLikeCount() {
-  const res = await fetch('https://api.countapi.xyz/get/meme-reset-2026/likes');
+  const res = await fetch('https://api.countapi.xyz/get/great-meme-reset-2026/likes');
   const data = await res.json();
-  document.getElementById('likeCount').textContent = data.value;
+  document.getElementById('likeCount').textContent = data.value || 0;
 }
-
 document.getElementById('likeButton').addEventListener('click', async () => {
-  const res = await fetch('https://api.countapi.xyz/hit/meme-reset-2026/likes');
+  const res = await fetch('https://api.countapi.xyz/hit/great-meme-reset-2026/likes');
   const data = await res.json();
   document.getElementById('likeCount').textContent = data.value;
+  document.getElementById('likeButton').classList.add('glow');
+  setTimeout(() => document.getElementById('likeButton').classList.remove('glow'), 1000);
 });
 
-// Load
-updateViewerCount();
+// Simulated current viewer count
+let currentViewers = Math.floor(Math.random() * 3) + 1;
+function updateCurrentViewers() {
+  // Random simulation for now
+  const fluctuation = Math.floor(Math.random() * 3) - 1;
+  currentViewers = Math.max(1, currentViewers + fluctuation);
+  document.getElementById('currentViewers').textContent = `👁️ Current Viewers: ${currentViewers}`;
+}
+setInterval(updateCurrentViewers, 8000);
+updateCurrentViewers();
+
+// SHARE BUTTONS
+const pageUrl = encodeURIComponent(window.location.href);
+document.getElementById('shareX').href = `https://twitter.com/intent/tweet?text=The%20Great%20Meme%20Reset%202026%20is%20coming!&url=${pageUrl}`;
+document.getElementById('shareReddit').href = `https://www.reddit.com/submit?url=${pageUrl}&title=The%20Great%20Meme%20Reset%202026%20is%20coming!`;
+
+document.getElementById('copyLink').addEventListener('click', async () => {
+  await navigator.clipboard.writeText(window.location.href);
+  const msg = document.getElementById('copyMessage');
+  msg.style.display = 'block';
+  setTimeout(() => (msg.style.display = 'none'), 1500);
+});
+
+// Init
+updateTotalVisits();
 updateLikeCount();
-setInterval(updateViewerCount, 10000);
