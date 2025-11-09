@@ -38,7 +38,7 @@ async function updateViewerCount() {
   try {
     const res = await fetch('https://api.countapi.xyz/hit/great-meme-reset-2026/viewers');
     const data = await res.json();
-    document.getElementById('viewerCount').textContent = `Total viewers: ${data.value}`;
+    document.getElementById('viewerCount').textContent = `👁️ Total Viewers: ${data.value}`;
   } catch (err) {
     console.error('Viewer count error:', err);
   }
