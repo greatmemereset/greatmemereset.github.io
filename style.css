@@ -12,9 +12,10 @@ body {
   flex-direction: column;
   align-items: center;
   color: white;
+  text-align: center;
 }
 
-/* COUNTDOWN CONTAINER */
+/* COUNTDOWN BOX */
 .container {
   background: rgba(0, 0, 0, 0.6);
   border-radius: 20px;
@@ -22,12 +23,8 @@ body {
   text-align: center;
   backdrop-filter: blur(10px);
   box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-  margin-top: 70px;
-}
-
-h1 {
-  font-size: 2rem;
-  margin-bottom: 25px;
+  margin-top: 60px;
+  animation: fadeIn 1s ease;
 }
 
 .countdown {
@@ -45,34 +42,29 @@ h1 {
   min-width: 90px;
 }
 
-.label {
-  font-size: 0.85rem;
-  opacity: 0.8;
-}
-
-/* CONTRIBUTE BUTTON */
-#contribute-btn {
-  margin-top: 10px;
-  padding: 12px 25px;
+/* BUTTONS */
+#contribute-btn,
+.like-button,
+.share-btn {
+  background: rgba(255,255,255,0.2);
   border: none;
   border-radius: 10px;
+  padding: 10px 25px;
   color: #fff;
-  background: rgba(255, 255, 255, 0.15);
+  font-size: 1rem;
   cursor: pointer;
   box-shadow: 0 4px 10px rgba(0,0,0,0.3);
   transition: all 0.3s ease;
 }
-#contribute-btn:hover {
-  background: rgba(255,255,255,0.3);
+
+#contribute-btn:hover,
+.like-button:hover,
+.share-btn:hover {
+  background: rgba(255,255,255,0.35);
   transform: scale(1.05);
 }
 
-#contribution-count {
-  margin-top: 8px;
-  font-size: 1.1rem;
-}
-
-/* ✅ COMMUNITY BOX (translucent with clear contrast) */
+/* COMMUNITY BOX */
 .community-box {
   background: rgba(0, 0, 0, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -87,11 +79,6 @@ h1 {
   animation: fadeUp 1.2s ease;
 }
 
-.community-box h2 {
-  margin-bottom: 20px;
-  font-size: 1.5rem;
-}
-
 .stat-item {
   font-size: 1.1rem;
   background: rgba(255, 255, 255, 0.15);
@@ -100,34 +87,60 @@ h1 {
   margin-bottom: 15px;
 }
 
-/* Like button styles */
 .like-container {
   margin-top: 10px;
 }
 
-.like-button {
-  background: rgba(255,255,255,0.2);
-  border: none;
-  border-radius: 10px;
-  padding: 10px 25px;
-  color: #fff;
-  font-size: 1rem;
-  cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
-  transition: all 0.3s ease;
-}
-.like-button:hover {
-  background: rgba(255,255,255,0.35);
-  transform: scale(1.05);
-}
 .like-count {
   margin-left: 10px;
   font-weight: bold;
   font-size: 1.2rem;
 }
 
-/* Animation */
+/* SHARE BOX */
+.share-box {
+  margin-top: 50px;
+  padding: 30px 40px;
+  width: 80%;
+  max-width: 500px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 20px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  backdrop-filter: blur(10px);
+  animation: fadeUp 1.5s ease;
+}
+
+.share-buttons {
+  margin-top: 15px;
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.share-btn {
+  text-decoration: none;
+  display: inline-block;
+}
+
+/* Glow animation */
+@keyframes glowPulse {
+  0% { box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+  50% { box-shadow: 0 0 25px rgba(255,255,255,0.5); }
+  100% { box-shadow: 0 0 10px rgba(255,255,255,0.2); }
+}
+
+.glow {
+  animation: glowPulse 1s ease;
+}
+
+/* Animations */
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(40px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
