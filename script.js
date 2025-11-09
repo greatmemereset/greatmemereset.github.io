@@ -22,62 +22,67 @@ function updateCountdown() {
 setInterval(updateCountdown, 1000);
 updateCountdown();
 
-// CONTRIBUTION BUTTON
-let count = localStorage.getItem('contributions') || 0;
-const contributionDisplay = document.getElementById('contribution-count');
-contributionDisplay.textContent = `${count} people contributing`;
-
-document.getElementById('contribute-btn').addEventListener('click', () => {
-  count++;
-  localStorage.setItem('contributions', count);
-  contributionDisplay.textContent = `${count} people contributing`;
-  document.getElementById('contribute-btn').classList.add('glow');
-  setTimeout(() => document.getElementById('contribute-btn').classList.remove('glow'), 1000);
-});
-
-// COUNTAPI CONFIG
+// CountAPI Setup
 const BASE = "https://api.countapi.xyz";
-const NAMESPACE = "great-meme-reset-2026";
+const NS = "great-meme-reset-2026";
 
-// Ensure keys exist before using
+// Ensure counter exists
 async function ensureKey(key) {
-  try {
-    const res = await fetch(`${BASE}/get/${NAMESPACE}/${key}`);
-    if (!res.ok) throw new Error();
-  } catch {
-    await fetch(`${BASE}/create?namespace=${NAMESPACE}&key=${key}&value=0`);
-  }
+  const url = `${BASE}/get/${NS}/${key}`;
+  const res = await fetch(url);
+  if (!res.ok) await fetch(`${BASE}/create?namespace=${NS}&key=${key}&value=0`);
 }
 
-// Initialize keys
+// Initialize everything
 (async () => {
   await ensureKey("likes");
   await ensureKey("totalvisits");
-  await updateTotalVisits();
-  await updateLikeCount();
+  await ensureKey("contributions");
+  await updateAllStats();
 })();
 
-// Update total visits
-async function updateTotalVisits() {
-  const res = await fetch(`${BASE}/hit/${NAMESPACE}/totalvisits`);
-  const data = await res.json();
-  document.getElementById('totalVisits').textContent = `🌍 Total Visits: ${data.value}`;
+async function updateAllStats() {
+  await updateVisits();
+  await updateLikes();
+  await updateContributions();
 }
 
-// Like button setup
-async function updateLikeCount() {
-  const res = await fetch(`${BASE}/get/${NAMESPACE}/likes`);
+// Total visits
+async function updateVisits() {
+  const res = await fetch(`${BASE}/hit/${NS}/totalvisits`);
   const data = await res.json();
-  document.getElementById('likeCount').textContent = data.value || 0;
+  document.getElementById('viewerCount').textContent = `🌍 Total Visits: ${data.value}`;
+}
+
+// Likes
+async function updateLikes() {
+  const res = await fetch(`${BASE}/get/${NS}/likes`);
+  const data = await res.json();
+  document.getElementById('likeCount').textContent = data.value;
 }
 
 document.getElementById('likeButton').addEventListener('click', async () => {
-  const res = await fetch(`${BASE}/hit/${NAMESPACE}/likes`);
+  const res = await fetch(`${BASE}/hit/${NS}/likes`);
   const data = await res.json();
   document.getElementById('likeCount').textContent = data.value;
   document.getElementById('likeButton').classList.add('glow');
   setTimeout(() => document.getElementById('likeButton').classList.remove('glow'), 1000);
 });
+
+// Contribute (global)
+document.getElementById('contribute-btn').addEventListener('click', async () => {
+  const res = await fetch(`${BASE}/hit/${NS}/contributions`);
+  const data = await res.json();
+  document.getElementById('contribution-count').textContent = `${data.value} people contributing`;
+  document.getElementById('contribute-btn').classList.add('glow');
+  setTimeout(() => document.getElementById('contribute-btn').classList.remove('glow'), 1000);
+});
+
+async function updateContributions() {
+  const res = await fetch(`${BASE}/get/${NS}/contributions`);
+  const data = await res.json();
+  document.getElementById('contribution-count').textContent = `${data.value} people contributing`;
+}
 
 // Simulated current viewers
 let currentViewers = Math.floor(Math.random() * 3) + 1;
@@ -89,7 +94,7 @@ function updateCurrentViewers() {
 setInterval(updateCurrentViewers, 8000);
 updateCurrentViewers();
 
-// SHARE BUTTONS
+// Share setup
 const pageUrl = encodeURIComponent(window.location.href);
 document.getElementById('shareX').href = `https://twitter.com/intent/tweet?text=The%20Great%20Meme%20Reset%202026%20is%20coming!%20%23GreatMemeReset%20%232026MemeEra&url=${pageUrl}`;
 document.getElementById('shareReddit').href = `https://www.reddit.com/submit?url=${pageUrl}&title=The%20Great%20Meme%20Reset%202026%20is%20coming!`;
