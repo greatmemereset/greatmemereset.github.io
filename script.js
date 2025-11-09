@@ -35,31 +35,53 @@ document.getElementById('contribute-btn').addEventListener('click', () => {
   setTimeout(() => document.getElementById('contribute-btn').classList.remove('glow'), 1000);
 });
 
-// COUNTAPI (Total visits + Likes)
+// COUNTAPI CONFIG
+const BASE = "https://api.countapi.xyz";
+const NAMESPACE = "great-meme-reset-2026";
+
+// Ensure keys exist before using
+async function ensureKey(key) {
+  try {
+    const res = await fetch(`${BASE}/get/${NAMESPACE}/${key}`);
+    if (!res.ok) throw new Error();
+  } catch {
+    await fetch(`${BASE}/create?namespace=${NAMESPACE}&key=${key}&value=0`);
+  }
+}
+
+// Initialize keys
+(async () => {
+  await ensureKey("likes");
+  await ensureKey("totalvisits");
+  await updateTotalVisits();
+  await updateLikeCount();
+})();
+
+// Update total visits
 async function updateTotalVisits() {
-  const res = await fetch('https://api.countapi.xyz/hit/great-meme-reset-2026/totalvisits');
+  const res = await fetch(`${BASE}/hit/${NAMESPACE}/totalvisits`);
   const data = await res.json();
   document.getElementById('totalVisits').textContent = `🌍 Total Visits: ${data.value}`;
 }
 
-// Like button
+// Like button setup
 async function updateLikeCount() {
-  const res = await fetch('https://api.countapi.xyz/get/great-meme-reset-2026/likes');
+  const res = await fetch(`${BASE}/get/${NAMESPACE}/likes`);
   const data = await res.json();
   document.getElementById('likeCount').textContent = data.value || 0;
 }
+
 document.getElementById('likeButton').addEventListener('click', async () => {
-  const res = await fetch('https://api.countapi.xyz/hit/great-meme-reset-2026/likes');
+  const res = await fetch(`${BASE}/hit/${NAMESPACE}/likes`);
   const data = await res.json();
   document.getElementById('likeCount').textContent = data.value;
   document.getElementById('likeButton').classList.add('glow');
   setTimeout(() => document.getElementById('likeButton').classList.remove('glow'), 1000);
 });
 
-// Simulated current viewer count
+// Simulated current viewers
 let currentViewers = Math.floor(Math.random() * 3) + 1;
 function updateCurrentViewers() {
-  // Random simulation for now
   const fluctuation = Math.floor(Math.random() * 3) - 1;
   currentViewers = Math.max(1, currentViewers + fluctuation);
   document.getElementById('currentViewers').textContent = `👁️ Current Viewers: ${currentViewers}`;
@@ -69,7 +91,7 @@ updateCurrentViewers();
 
 // SHARE BUTTONS
 const pageUrl = encodeURIComponent(window.location.href);
-document.getElementById('shareX').href = `https://twitter.com/intent/tweet?text=The%20Great%20Meme%20Reset%202026%20is%20coming!&url=${pageUrl}`;
+document.getElementById('shareX').href = `https://twitter.com/intent/tweet?text=The%20Great%20Meme%20Reset%202026%20is%20coming!%20%23GreatMemeReset%20%232026MemeEra&url=${pageUrl}`;
 document.getElementById('shareReddit').href = `https://www.reddit.com/submit?url=${pageUrl}&title=The%20Great%20Meme%20Reset%202026%20is%20coming!`;
 
 document.getElementById('copyLink').addEventListener('click', async () => {
@@ -78,7 +100,3 @@ document.getElementById('copyLink').addEventListener('click', async () => {
   msg.style.display = 'block';
   setTimeout(() => (msg.style.display = 'none'), 1500);
 });
-
-// Init
-updateTotalVisits();
-updateLikeCount();
