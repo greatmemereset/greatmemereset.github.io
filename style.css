@@ -1,30 +1,41 @@
 * {
-  box-sizing: border-box;
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 body {
   font-family: "Poppins", sans-serif;
   background: url("background.jpg") no-repeat center center/cover;
-  min-height: 100vh;
+  color: #fff;
   display: flex;
   flex-direction: column;
   align-items: center;
-  color: white;
-  text-align: center;
+  min-height: 100vh;
 }
 
-/* COUNTDOWN BOX */
+/* MAIN CONTAINER */
 .container {
-  background: rgba(0, 0, 0, 0.6);
-  border-radius: 20px;
-  padding: 40px 60px;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(12px);
+  border-radius: 25px;
+  padding: 40px 50px;
+  margin-top: 100px;
   text-align: center;
-  backdrop-filter: blur(10px);
-  box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-  margin-top: 60px;
-  animation: fadeIn 1s ease;
+  box-shadow: 0 0 25px rgba(0, 0, 0, 0.4);
+  max-width: 700px;
+  width: 90%;
+}
+
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+}
+
+.desc {
+  font-size: 1rem;
+  opacity: 0.85;
+  margin-bottom: 25px;
 }
 
 .countdown {
@@ -38,109 +49,114 @@ body {
 .countdown div {
   background: rgba(255, 255, 255, 0.15);
   border-radius: 10px;
-  padding: 12px 20px;
+  padding: 15px 25px;
   min-width: 90px;
 }
 
-/* BUTTONS */
-#contribute-btn,
-.like-button,
-.share-btn {
-  background: rgba(255,255,255,0.2);
+.label {
+  font-size: 0.85rem;
+  opacity: 0.8;
+}
+
+/* CONTRIBUTE */
+#contribute-btn {
+  margin-top: 10px;
+  padding: 12px 30px;
+  background: rgba(255, 255, 255, 0.2);
   border: none;
-  border-radius: 10px;
-  padding: 10px 25px;
+  border-radius: 12px;
   color: #fff;
   font-size: 1rem;
   cursor: pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3);
   transition: all 0.3s ease;
 }
-
-#contribute-btn:hover,
-.like-button:hover,
-.share-btn:hover {
-  background: rgba(255,255,255,0.35);
+#contribute-btn:hover {
+  background: rgba(255,255,255,0.3);
   transform: scale(1.05);
+}
+
+#contribution-count {
+  margin-top: 10px;
+  font-size: 1.1rem;
 }
 
 /* COMMUNITY BOX */
 .community-box {
   background: rgba(0, 0, 0, 0.6);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
   border-radius: 20px;
-  backdrop-filter: blur(12px);
-  padding: 30px 40px;
+  border: 1px solid rgba(255,255,255,0.2);
+  padding: 25px 30px;
   margin-top: 60px;
-  width: 80%;
+  width: 85%;
   max-width: 500px;
   text-align: center;
-  box-shadow: 0 0 25px rgba(0,0,0,0.6);
-  animation: fadeUp 1.2s ease;
+  box-shadow: 0 0 20px rgba(0,0,0,0.4);
 }
 
-.stat-item {
-  font-size: 1.1rem;
-  background: rgba(255, 255, 255, 0.15);
-  border-radius: 10px;
-  padding: 10px 20px;
+.community-box h2 {
   margin-bottom: 15px;
 }
 
+.stat-item {
+  background: rgba(255,255,255,0.1);
+  padding: 10px;
+  border-radius: 10px;
+  margin: 8px 0;
+}
+
+/* LIKE */
 .like-container {
   margin-top: 10px;
 }
-
+.like-button {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 10px;
+  padding: 10px 25px;
+  color: #fff;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+.like-button:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.05);
+}
 .like-count {
   margin-left: 10px;
   font-weight: bold;
   font-size: 1.2rem;
 }
 
-/* SHARE BOX */
-.share-box {
-  margin-top: 50px;
-  padding: 30px 40px;
-  width: 80%;
-  max-width: 500px;
-  background: rgba(0,0,0,0.5);
-  border-radius: 20px;
-  box-shadow: 0 0 20px rgba(0,0,0,0.5);
-  backdrop-filter: blur(10px);
-  animation: fadeUp 1.5s ease;
+/* SHARE SECTION */
+.share {
+  margin-top: 20px;
 }
-
 .share-buttons {
-  margin-top: 15px;
   display: flex;
   justify-content: center;
-  flex-wrap: wrap;
   gap: 10px;
+  margin-top: 8px;
 }
-
-.share-btn {
+.share-buttons a, .share-buttons button {
+  background: rgba(255,255,255,0.2);
+  color: #fff;
   text-decoration: none;
-  display: inline-block;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.share-buttons a:hover, .share-buttons button:hover {
+  background: rgba(255,255,255,0.35);
+  transform: scale(1.05);
 }
 
-/* Glow animation */
-@keyframes glowPulse {
-  0% { box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-  50% { box-shadow: 0 0 25px rgba(255,255,255,0.5); }
-  100% { box-shadow: 0 0 10px rgba(255,255,255,0.2); }
-}
-
+/* Button pulse animation */
 .glow {
-  animation: glowPulse 1s ease;
-}
-
-/* Animations */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  box-shadow: 0 0 15px 4px rgba(255,255,255,0.6);
+  transition: box-shadow 0.3s ease;
 }
